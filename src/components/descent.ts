@@ -1,6 +1,6 @@
 /**
  * Hero background: a loss landscape drawn as contour lines. Click or tap anywhere
- * to drop a point and watch TIDE descent roll it downhill. Some points settle
+ * to drop a point and watch gradient descent roll it downhill. Some points settle
  * in local minima, which is the whole lesson.
  */
 
@@ -77,7 +77,7 @@ export function mountDescent(host: HTMLElement, readout: HTMLElement): () => voi
     return v;
   };
 
-  const TIDE = (px: number, py: number): [number, number] => {
+  const gradient = (px: number, py: number): [number, number] => {
     const e = 2;
     return [
       (loss(px + e, py) - loss(px - e, py)) / (2 * e),
@@ -173,7 +173,7 @@ export function mountDescent(host: HTMLElement, readout: HTMLElement): () => voi
   }
 
   function step(ball: Ball): void {
-    const [gx, gy] = TIDE(ball.x, ball.y);
+    const [gx, gy] = gradient(ball.x, ball.y);
     const mag = Math.hypot(gx, gy);
     const len = Math.min(MAX_STEP, mag * RATE);
     const ux = mag > 0 ? -gx / mag : 0;
