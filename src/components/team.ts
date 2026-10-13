@@ -80,12 +80,11 @@ function vortex(t: Team): HTMLElement {
 }
 
 export function teamCard(t: Team): HTMLElement {
-  const links = (
-    [
-      ['Repository', safeUrl(t.repo_url)],
-      ['Live demo', safeUrl(t.demo_url)],
-    ] as const
-  ).filter((l): l is readonly [string, string] => Boolean(l[1]));
+  const links: Array<[string, string]> = [];
+  const repo = safeUrl(t.repo_url);
+  if (repo) links.push(['Repository', repo]);
+  const demo = safeUrl(t.demo_url);
+  if (demo) links.push(['Live demo', demo]);
 
   const status = t.status || 'building';
 

@@ -15,9 +15,9 @@ import { animate } from 'motion';
  */
 
 const ORDER = ['/', '/events', '/workshops', '/teams'];
-const COVER = 0.5; // s, wave comes in
-const REVEAL = 0.6; // s, wave leaves
-const EASE = [0.5, 0, 0.2, 1] as const; // slow swell, fast crest
+const COVER = 0.2; // s, wave comes in
+const REVEAL = 0.3; // s, wave leaves
+const EASE = [0.2, 0.1, 0.1, 0.4] as const; // slow swell, fast crest
 
 // Bottom layer first. Delay makes the layers trail each other like a real wave.
 const LAYERS = [
@@ -89,7 +89,6 @@ export function initPageTransitions(selectorArg?: string | null | Element): void
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   let overlay: ReturnType<typeof buildOverlay> | null = null;
-  let prev = pathOf(location.hash);
   let pending: 1 | -1 | null = null;
   let guard = 0;
 
@@ -126,7 +125,6 @@ export function initPageTransitions(selectorArg?: string | null | Element): void
 
   window.addEventListener('hashchange', () => {
     window.clearTimeout(guard);
-    const current = pathOf(location.hash);
     if (pending !== null) {
       reveal(pending);
     } else if (!reduce.matches) {
@@ -134,7 +132,6 @@ export function initPageTransitions(selectorArg?: string | null | Element): void
       const main = document.querySelector<HTMLElement>(selector);
       if (main) requestAnimationFrame(() => animate(main, { opacity: [0, 1] }, { duration: 0.3 }));
     }
-    prev = current;
     pending = null;
   });
 

@@ -1,5 +1,4 @@
-import './styles/main.css';
-import { h } from './lib/dom';
+import './styles/main.css';import { h } from './lib/dom';
 import { route, setNotFound, startRouter } from './lib/router';
 import { buildFooter, buildHeader } from './components/chrome';
 import { homePage } from './pages/home';
@@ -9,7 +8,9 @@ import { workshopPage } from './pages/workshop';
 import { teamsPage } from './pages/teams';
 import { adminPage } from './pages/admin';
 import { notFoundPage } from './pages/notfound';
+import { initPageTransitions } from './lib/transition';
 import './styles/polish.css'; // должен идти последним среди импортов
+initPageTransitions(document.querySelector<HTMLElement>('.main')!);
 
 route('/', homePage);
 route('/events', eventsPage);
