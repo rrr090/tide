@@ -12,7 +12,9 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.117.3",
     "dompurify": "^3.4.16",
+    "framer-motion": "^14.1.0",
     "marked": "^18.1.0",
+    "motion": "^14.1.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0"
   },

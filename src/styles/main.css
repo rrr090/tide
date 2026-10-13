@@ -39,6 +39,9 @@
   --radius-s: 10px;
   --radius-m: 16px;
   --radius-l: 24px;
+
+  /* Single source of truth for the sticky header height (hero slides under it) */
+  --header-h: 3.25rem;
 }
 
 *,
@@ -215,17 +218,17 @@ svg {
   font-size: var(--step-2);
 }
 
-/* Header and footer (Glassmorphism & Waves vibe)
+/* Header and footer 
    ========================================================================== */
 
 .site-header {
   position: sticky;
   top: 0;
   z-index: 50;
-  background: rgba(18, 60, 120, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(97, 183, 222, 0.15);
+  background: rgba(18, 60, 120, 0.94);
+  backdrop-filter: saturate(180%) blur(22px);
+  -webkit-backdrop-filter: saturate(180%) blur(22px);
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.08);
 }
 
 .site-header__inner {
@@ -233,7 +236,7 @@ svg {
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  min-height: 4.2rem;
+  min-height: var(--header-h);
 }
 
 .brand {

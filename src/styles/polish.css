@@ -1,0 +1,395 @@
+/* ==========================================================================
+   TIDE — polish layer (global + inner pages)
+   Load AFTER main.css. Home-only styling lives in home.css (scoped by .home),
+   so the two files never fight over the same selectors.
+   ========================================================================== */
+
+:root {
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-apple: cubic-bezier(0.28, 0.11, 0.32, 1);
+  --radius-xl: 28px;
+  --shadow-soft: 0 1px 2px rgba(18, 60, 120, 0.04), 0 12px 32px -12px rgba(18, 60, 120, 0.14);
+  --shadow-lift: 0 2px 4px rgba(18, 60, 120, 0.05), 0 28px 56px -20px rgba(18, 60, 120, 0.28);
+}
+
+html {
+  scroll-padding-top: calc(var(--header-h) + 1rem);
+}
+
+body {
+  line-height: 1.55;
+}
+
+h1,
+h2 {
+  letter-spacing: -0.035em;
+}
+
+.main {
+  flex: 1 0 auto;
+}
+
+/* ---------- Page enter ---------- */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+/* Page enter/leave is handled by transition.ts (motion). `rise` stays for list cards below. */
+body {
+  overflow-x: clip; /* the swipe briefly shifts .main sideways: no horizontal scrollbar */
+}
+
+/* ---------- Header: glass. Solid-ish on inner pages, lighter over the home hero ---------- */
+.site-header {
+  background: rgba(18, 60, 120, 0.94);
+}
+
+body:has(.home) .site-header {
+  background: rgba(18, 60, 120, 0.72);
+}
+
+.brand__name {
+  font-size: 1.2rem;
+}
+
+.brand__mark svg {
+  width: 26px;
+  height: 26px;
+}
+
+.nav {
+  gap: 0.15rem;
+}
+
+.nav__link {
+  padding: 0.38rem 0.9rem;
+  font-size: 0.875rem;
+  border-radius: 999px;
+  transition: background-color 0.25s var(--ease-apple), color 0.25s var(--ease-apple);
+}
+
+.nav__link[aria-current='page'] {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.nav__link[aria-current='page']::after {
+  display: none;
+}
+
+/* ---------- Buttons: pill ---------- */
+.btn {
+  padding: 0.85rem 1.6rem;
+  border-radius: 999px;
+  letter-spacing: -0.01em;
+  transition:
+    transform 0.3s var(--ease-apple),
+    box-shadow 0.3s var(--ease-apple),
+    background-color 0.25s var(--ease-apple),
+    border-color 0.25s var(--ease-apple),
+    color 0.25s var(--ease-apple);
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.btn--small {
+  padding: 0.5rem 1.05rem;
+}
+
+.btn--primary:hover:not(:disabled),
+.btn--ghost:hover:not(:disabled),
+.btn--outline:hover {
+  transform: translateY(-1px) scale(1.02);
+}
+
+.link-more {
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.link-more::after {
+  content: '›';
+  display: inline-block;
+  margin-left: 0.15em;
+  transition: transform 0.25s var(--ease-apple);
+}
+
+.link-more:hover::after {
+  transform: translateX(4px);
+}
+
+/* ---------- Sections ---------- */
+.section {
+  padding-block: clamp(4.5rem, 9vw, 7.5rem);
+}
+
+.section--tight {
+  padding-block: clamp(2.5rem, 5vw, 4rem) clamp(5rem, 9vw, 7rem);
+}
+
+.section--ice {
+  background:
+    radial-gradient(ellipse at 90% 0%, rgba(97, 183, 222, 0.08), transparent 45%),
+    var(--ice);
+}
+
+.section-head {
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+  text-align: center;
+}
+
+.section-head h2 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  letter-spacing: -0.045em;
+}
+
+.section-head__lead {
+  margin-inline: auto;
+  font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+}
+
+/* ---------- Directions: cards ---------- */
+.directions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1rem;
+  border-top: 0;
+}
+
+.direction,
+.direction:hover {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 1.75rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  background: var(--white);
+}
+
+.direction {
+  box-shadow: var(--shadow-soft);
+  transition:
+    transform 0.5s var(--ease-apple),
+    box-shadow 0.5s var(--ease-apple),
+    border-color 0.3s ease;
+}
+
+.direction:hover {
+  transform: translateY(-4px);
+  border-color: var(--sky);
+  box-shadow: var(--shadow-lift);
+}
+
+.direction__title {
+  font-size: 1.6rem;
+  letter-spacing: -0.03em;
+}
+
+.direction__level {
+  justify-self: auto;
+  margin-top: auto;
+  padding-top: 0.75rem;
+}
+
+/* ---------- Events: soft cards, no rail ---------- */
+.timeline {
+  gap: 0.9rem;
+}
+
+.timeline::before,
+.event::before {
+  display: none;
+}
+
+.event {
+  align-items: center;
+  padding: 1.5rem 1.75rem;
+  border-radius: var(--radius-xl);
+  background: var(--ice);
+  transition:
+    transform 0.5s var(--ease-apple),
+    box-shadow 0.5s var(--ease-apple);
+}
+
+.event:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-soft);
+}
+
+.event__body {
+  padding-left: 0;
+}
+
+.event__day {
+  font-size: 2.75rem;
+  letter-spacing: -0.05em;
+}
+
+/* ---------- Workshops ---------- */
+.workshop-list {
+  display: grid;
+  gap: 0.9rem;
+  border-top: 0;
+}
+
+.workshop {
+  margin: 0;
+  padding: 1.5rem 1.75rem;
+  border: 0;
+  border-radius: var(--radius-xl);
+  background: var(--ice);
+  transition:
+    transform 0.5s var(--ease-apple),
+    box-shadow 0.5s var(--ease-apple),
+    background-color 0.3s ease;
+}
+
+.workshop:hover {
+  transform: translateY(-3px);
+  background: var(--white);
+  box-shadow: var(--shadow-lift);
+}
+
+.workshop__title {
+  font-size: 1.35rem;
+  letter-spacing: -0.025em;
+}
+
+/* On ice sections cards turn white so they don't melt into the background */
+.section--ice .event,
+.section--ice .workshop {
+  background: var(--white);
+  box-shadow: var(--shadow-soft);
+}
+
+/* ---------- Inner pages ---------- */
+.page-head {
+  padding-block: clamp(4rem, 9vw, 7rem) clamp(2rem, 4vw, 3rem);
+  text-align: center;
+  border-bottom: 0;
+}
+
+.page-head h1 {
+  font-size: clamp(2.8rem, 8vw, 5.5rem);
+  letter-spacing: -0.05em;
+}
+
+.page-head p {
+  margin-inline: auto;
+  font-size: clamp(1.1rem, 2vw, 1.4rem);
+}
+
+.article-head {
+  border-bottom: 0;
+}
+
+.article-head h1 {
+  letter-spacing: -0.045em;
+}
+
+.filters {
+  max-width: 40rem;
+  margin-inline: auto;
+}
+
+.filters .chips {
+  justify-content: center;
+}
+
+.filters__status {
+  text-align: center;
+}
+
+.input {
+  border-radius: 14px;
+  padding: 0.85rem 1.1rem;
+}
+
+input[type='search'].input {
+  border-radius: 999px;
+  padding-inline: 1.4rem;
+  background: var(--ice);
+  border-color: transparent;
+}
+
+input[type='search'].input:focus-visible {
+  background: var(--white);
+}
+
+.chip {
+  transition: all 0.25s var(--ease-apple);
+}
+
+.panel {
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-soft);
+}
+
+.state--empty,
+.state--error {
+  align-items: center;
+  text-align: center;
+  border-radius: var(--radius-xl);
+}
+
+.site-footer a {
+  transition: color 0.2s ease;
+}
+
+/* ---------- Scroll-driven reveal for list cards (CSS-only browsers).
+   Skipped inside .reveal wrappers (home) so the two systems never stack. ---------- */
+@supports (animation-timeline: view()) {
+  .event,
+  .workshop,
+  .direction,
+  .state--empty {
+    animation: rise linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 30%;
+  }
+
+  .reveal .event,
+  .reveal .workshop,
+  .reveal .direction,
+  .reveal .state--empty {
+    animation: none;
+  }
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 40rem) {
+  .event {
+    padding: 1.25rem;
+  }
+
+  .event__date {
+    gap: 0.5rem;
+  }
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .main > *,
+  .event,
+  .workshop,
+  .direction,
+  .state--empty {
+    animation: none !important;
+  }
+
+  .btn:hover,
+  .direction:hover,
+  .event:hover,
+  .workshop:hover {
+    transform: none !important;
+  }
+}

@@ -1,0 +1,304 @@
+/* Teams page. Whirlpool card. Uses only the existing palette tokens. */
+
+.teams {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+  gap: 1.25rem;
+}
+
+.team {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem 1.75rem 1.75rem;
+  border-radius: 28px;
+  background: var(--ice);
+  overflow: hidden;
+  transition:
+    transform 0.5s cubic-bezier(0.28, 0.11, 0.32, 1),
+    box-shadow 0.5s cubic-bezier(0.28, 0.11, 0.32, 1);
+}
+
+/* water glow behind the vortex */
+.team::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  top: -10%;
+  left: 50%;
+  width: 120%;
+  height: 22rem;
+  translate: -50% 0;
+  background: radial-gradient(closest-side, rgba(97, 183, 222, 0.3), transparent);
+}
+
+.team:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 2px 4px rgba(18, 60, 120, 0.05), 0 28px 56px -20px rgba(18, 60, 120, 0.28);
+}
+
+/* ---------- Whirlpool ---------- */
+.vortex {
+  --vsize: 14rem;
+  --orbit: 5.6rem;
+  position: relative;
+  flex: none;
+  width: var(--vsize);
+  aspect-ratio: 1;
+  margin-inline: auto;
+  transition: transform 0.7s cubic-bezier(0.28, 0.11, 0.32, 1);
+}
+
+/* the water disc: dark deep center, light at the rim */
+.vortex::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 50% 50%,
+    var(--navy) 0 14%,
+    var(--blue) 30%,
+    rgba(97, 183, 222, 0.55) 58%,
+    rgba(97, 183, 222, 0.14) 76%,
+    transparent 78%
+  );
+}
+
+/* ripple ring that pulses outward on hover */
+.vortex::after {
+  content: '';
+  position: absolute;
+  inset: 4%;
+  border-radius: 50%;
+  border: 2px solid var(--sky);
+  opacity: 0;
+}
+
+.team:hover .vortex {
+  transform: scale(1.06);
+}
+
+.team:hover .vortex::after {
+  animation: ripple 1.6s ease-out infinite;
+}
+
+.vortex__arms {
+  position: absolute;
+  inset: 0;
+  animation: swirl 14s linear infinite;
+}
+
+.vortex__arms--back {
+  inset: 6%;
+  animation: swirl-rev 24s linear infinite;
+}
+
+.vortex__arms svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.vortex__arms svg.over {
+  position: absolute;
+  inset: 0;
+}
+
+.vortex__core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 3.4rem;
+  height: 3.4rem;
+  translate: -50% -50%;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font: 750 1.5rem/1 var(--font-display);
+  box-shadow: 0 0 0 4px rgba(97, 183, 222, 0.45), 0 0 28px rgba(97, 183, 222, 0.6);
+  animation: breathe 4s ease-in-out infinite;
+}
+
+/* members orbit the core; avatars counter-rotate to stay upright */
+.vortex__orbit {
+  position: absolute;
+  inset: 0;
+  animation: swirl 36s linear infinite;
+}
+
+.orbit__item {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  transform: rotate(var(--a)) translateX(var(--orbit));
+}
+
+.orbit__avatar {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 2.3rem;
+  height: 2.3rem;
+  margin: -1.15rem 0 0 -1.15rem;
+  border-radius: 50%;
+  background: var(--white);
+  color: var(--navy);
+  font: 700 0.75rem/1 var(--font-display);
+  box-shadow: 0 4px 12px rgba(18, 60, 120, 0.3), 0 0 0 3px rgba(255, 255, 255, 0.5);
+  animation: upright 36s linear infinite;
+}
+
+.orbit__item:nth-child(3n + 2) .orbit__avatar {
+  background: var(--sky);
+}
+
+.orbit__item:nth-child(3n) .orbit__avatar {
+  background: var(--violet);
+  color: #fff;
+}
+
+/* ---------- Text ---------- */
+.team__body {
+  display: grid;
+  gap: 0.9rem;
+  align-content: start;
+}
+
+.team__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.team__title {
+  font-size: 1.75rem;
+  letter-spacing: -0.035em;
+}
+
+.team__status {
+  background: var(--violet-tint);
+  color: var(--violet);
+}
+
+.team[data-status='shipped'] .team__status {
+  background: rgba(97, 183, 222, 0.2);
+  color: var(--navy);
+}
+
+.team[data-status='recruiting'] .team__status {
+  background: var(--navy);
+  color: #fff;
+}
+
+.team__summary {
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--navy);
+}
+
+.team__desc {
+  color: var(--muted-on-ice);
+}
+
+.team__members {
+  display: grid;
+  border-top: 1px solid var(--line);
+}
+
+.team__members li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block: 0.6rem;
+  border-bottom: 1px solid var(--line);
+  font-size: 0.9375rem;
+}
+
+.team__members strong {
+  font-weight: 650;
+  color: var(--navy);
+}
+
+.team__members span {
+  color: var(--muted);
+  text-align: right;
+}
+
+.team__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* ---------- Motion ---------- */
+@keyframes swirl {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes swirl-rev {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+
+@keyframes upright {
+  from {
+    transform: rotate(calc(var(--a) * -1));
+  }
+  to {
+    transform: rotate(calc(var(--a) * -1 - 360deg));
+  }
+}
+
+@keyframes breathe {
+  50% {
+    box-shadow: 0 0 0 7px rgba(97, 183, 222, 0.3), 0 0 40px rgba(97, 183, 222, 0.75);
+  }
+}
+
+@keyframes ripple {
+  from {
+    opacity: 0.8;
+    transform: scale(0.55);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1.15);
+  }
+}
+
+@supports (animation-timeline: view()) {
+  .team {
+    animation: rise linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 30%;
+  }
+}
+
+@media (max-width: 24rem) {
+  .vortex {
+    --vsize: 12rem;
+    --orbit: 4.8rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .team {
+    animation: none !important;
+  }
+  .team:hover,
+  .team:hover .vortex {
+    transform: none;
+  }
+}

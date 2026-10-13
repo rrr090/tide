@@ -16,7 +16,9 @@ type FieldType =
   | 'url'
   | 'tags'
   | 'number'
-  | 'checkbox';
+  | 'checkbox'
+  | 'select'
+  | 'members';
 
 interface Field {
   key: string;
@@ -24,10 +26,11 @@ interface Field {
   type: FieldType;
   required?: boolean;
   help?: string;
+  options?: string[];
 }
 
 interface Entity {
-  key: 'events' | 'workshops' | 'directions';
+  key: 'events' | 'workshops' | 'directions' | 'teams';
   label: string;
   noun: string;
   orderBy: string;
@@ -92,6 +95,28 @@ const ENTITIES: Entity[] = [
       { key: 'slug', label: 'Address', type: 'text', help: 'Short identifier. Leave empty to create it from the title.' },
       { key: 'summary', label: 'Summary', type: 'textarea', required: true },
       { key: 'level', label: 'Level', type: 'text', help: 'Shown as a badge, for example: Beginner friendly.' },
+      { key: 'sort_order', label: 'Order', type: 'number', help: 'Lower numbers come first.' },
+      { key: 'published', label: 'Published', type: 'checkbox', help: 'Unpublished items stay hidden from the public site.' },
+    ],
+  },
+  {
+    key: 'teams',
+    label: 'Teams',
+    noun: 'team',
+    orderBy: 'sort_order',
+    ascending: true,
+    meta: (r) =>
+      [r.status, Array.isArray(r.members) ? `${r.members.length} members` : ''].filter(Boolean).join(' · '),
+    defaults: () => ({ published: true, tags: [], members: [], status: 'building', sort_order: 0 }),
+    fields: [
+      { key: 'title', label: 'Project name', type: 'text', required: true },
+      { key: 'summary', label: 'Short pitch', type: 'textarea', help: 'One sentence shown in bold under the name.' },
+      { key: 'description', label: 'Description', type: 'textarea', help: 'What the team is building and where it is now.' },
+      { key: 'status', label: 'Status', type: 'select', options: ['building', 'shipped', 'recruiting'], help: 'Recruiting shows a "Looking for members" badge.' },
+      { key: 'members', label: 'Members', type: 'members', help: 'One person per line: Name | Role. Example: Aiko Tanaka | Team lead. The first six orbit the whirlpool.' },
+      { key: 'tags', label: 'Tags', type: 'tags', help: 'Separate with commas, for example: llm, python.' },
+      { key: 'repo_url', label: 'Repository link', type: 'url' },
+      { key: 'demo_url', label: 'Live demo link', type: 'url' },
       { key: 'sort_order', label: 'Order', type: 'number', help: 'Lower numbers come first.' },
       { key: 'published', label: 'Published', type: 'checkbox', help: 'Unpublished items stay hidden from the public site.' },
     ],
@@ -361,7 +386,7 @@ export function adminPage(): RouteResult {
   function openForm(row: Row | null, rows: Row[]): void {
     const e = entity();
     const initial: Row = row ?? e.defaults();
-    if (!row && e.key === 'directions') {
+    if (!row && (e.key === 'directions' || e.key === 'teams')) {
       initial.sort_order = rows.reduce((max, r) => Math.max(max, Number(r.sort_order) || 0), 0) + 1;
     }
 
@@ -413,6 +438,7 @@ export function adminPage(): RouteResult {
       // Text columns that are NOT NULL in the schema.
       if ('summary' in payload && payload.summary == null) payload.summary = '';
       if ('body_md' in payload && payload.body_md == null) payload.body_md = '';
+      if (e.key === 'teams' && payload.description == null) payload.description = '';
 
       save.disabled = true;
       save.textContent = 'Saving';
@@ -487,6 +513,42 @@ export function adminPage(): RouteResult {
       return {
         wrapper: h('div', { class: 'field' }, label, h('div', { class: 'editor' }, input, preview), help),
         read: () => input.value,
+        focus: () => input.focus(),
+      };
+    }
+
+    if (f.type === 'select') {
+      const input = h(
+        'select',
+        { class: 'input', id, 'aria-describedby': describedBy },
+        (f.options ?? []).map((o) => h('option', { value: o }, o)),
+      );
+      input.value = String(value ?? f.options?.[0] ?? '');
+      return {
+        wrapper: h('div', { class: 'field' }, label, input, help),
+        read: () => input.value,
+        focus: () => input.focus(),
+      };
+    }
+
+    if (f.type === 'members') {
+      const input = h('textarea', { class: 'input', id, rows: 6, spellcheck: 'false', 'aria-describedby': describedBy });
+      input.placeholder = 'Aiko Tanaka | Team lead\nBen Carter | Backend';
+      input.value = Array.isArray(value)
+        ? (value as { name: string; role?: string }[]).map((m) => (m.role ? `${m.name} | ${m.role}` : m.name)).join('\n')
+        : '';
+      return {
+        wrapper: h('div', { class: 'field' }, label, input, help),
+        read: () =>
+          input.value
+            .split('\n')
+            .map((line) => line.trim())
+            .filter(Boolean)
+            .map((line) => {
+              const [name, ...rest] = line.split(/\s*(?:\||—)\s*/);
+              return { name: name.trim(), role: rest.join(' ').trim() };
+            })
+            .filter((m) => m.name),
         focus: () => input.focus(),
       };
     }

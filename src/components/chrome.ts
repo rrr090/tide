@@ -20,6 +20,7 @@ const NAV_ITEMS: { label: string; href: string; match: (p: string) => boolean }[
   { label: 'Home', href: '#/', match: (p) => p === '/' },
   { label: 'Events', href: '#/events', match: (p) => p.startsWith('/events') },
   { label: 'Workshops', href: '#/workshops', match: (p) => p.startsWith('/workshops') },
+  { label: 'Teams', href: '#/teams', match: (p) => p.startsWith('/teams') },
 ];
 
 export function buildHeader(): { el: HTMLElement; update: (path: string) => void } {
@@ -70,7 +71,7 @@ export function buildFooter(): HTMLElement {
         h(
           'p',
           null,
-          'A student club for people who want to learn machine learning by building with it.',
+          'A student club for people who want to learn AI by building with it.',
         ),
       ),
       h(
@@ -78,6 +79,7 @@ export function buildFooter(): HTMLElement {
         { class: 'site-footer__nav', 'aria-label': 'Footer' },
         h('a', { href: '#/events' }, 'Events'),
         h('a', { href: '#/workshops' }, 'Workshops'),
+        h('a', { href: '#/teams' }, 'Teams'),
         ...social.map(([label, href]) =>
           h('a', { href, target: '_blank', rel: 'noopener noreferrer' }, label),
         ),

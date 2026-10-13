@@ -1,0 +1,633 @@
+/* ==========================================================================
+   TIDE — polish layer (Apple-style)
+   Подключается ПОСЛЕДНИМ, после main.css и home.css. Палитра не меняется:
+   используются только существующие переменные (--navy, --blue, --sky,
+   --violet, --ice, --line ...). Классы и разметка остаются прежними,
+   поэтому admin, workshop и остальные страницы не ломаются.
+   ========================================================================== */
+
+:root {
+  --ease-out: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-apple: cubic-bezier(0.28, 0.11, 0.32, 1);
+  --header-h: 3.25rem;
+  --radius-xl: 28px;
+  --shadow-soft: 0 1px 2px rgba(18, 60, 120, 0.04), 0 12px 32px -12px rgba(18, 60, 120, 0.14);
+  --shadow-lift: 0 2px 4px rgba(18, 60, 120, 0.05), 0 28px 56px -20px rgba(18, 60, 120, 0.28);
+}
+
+html {
+  scroll-padding-top: calc(var(--header-h) + 1rem);
+}
+
+body {
+  line-height: 1.55;
+}
+
+h1,
+h2 {
+  letter-spacing: -0.035em;
+}
+
+/* ---------- Page enter: one soft fade when a route changes ---------- */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+.main > * {
+  animation: rise 0.6s var(--ease-out) both;
+}
+
+/* ---------- Header: тонкое «стеклянное» меню ---------- */
+.site-header {
+  background: rgba(18, 60, 120, 0.72);
+  backdrop-filter: saturate(180%) blur(22px);
+  -webkit-backdrop-filter: saturate(180%) blur(22px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.site-header__inner {
+  min-height: var(--header-h);
+}
+
+.brand__name {
+  font-size: 1.2rem;
+}
+
+.brand__mark svg {
+  width: 26px;
+  height: 26px;
+}
+
+.nav {
+  gap: 0.15rem;
+}
+
+.nav__link {
+  padding: 0.38rem 0.9rem;
+  font-size: 0.875rem;
+  border-radius: 999px;
+  transition: background-color 0.25s var(--ease-apple), color 0.25s var(--ease-apple);
+}
+
+.nav__link[aria-current='page'] {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.nav__link[aria-current='page']::after {
+  display: none;
+}
+
+/* ---------- Buttons: pill, как у Apple ---------- */
+.btn {
+  padding: 0.85rem 1.6rem;
+  border-radius: 999px;
+  letter-spacing: -0.01em;
+  transition:
+    transform 0.3s var(--ease-apple),
+    box-shadow 0.3s var(--ease-apple),
+    background-color 0.25s var(--ease-apple),
+    border-color 0.25s var(--ease-apple),
+    color 0.25s var(--ease-apple);
+}
+
+.btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.btn--small {
+  padding: 0.5rem 1.05rem;
+  border-radius: 999px;
+}
+
+.btn--primary:hover:not(:disabled),
+.btn--ghost:hover:not(:disabled),
+.btn--outline:hover {
+  transform: translateY(-1px) scale(1.02);
+}
+
+/* ghost-кнопка на тёмном hero не должна белеть при наведении */
+.hero--v2 .btn--ghost:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.35);
+  color: #fff;
+}
+
+.link-more {
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.link-more::after {
+  content: '›';
+  display: inline-block;
+  margin-left: 0.15em;
+  transition: transform 0.25s var(--ease-apple);
+}
+
+.link-more:hover::after {
+  transform: translateX(4px);
+}
+
+/* ---------- Hero ---------- */
+.hero--v2 {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  min-height: min(calc(100svh - var(--header-h)), 58rem);
+  padding-top: clamp(3rem, 8vw, 6rem);
+}
+
+.hero--v2 .hero__inner {
+  margin-block: auto;
+  padding-block: clamp(2rem, 6vw, 4rem);
+}
+
+.hero--v2 .hero__title {
+  max-width: 14ch;
+  margin-inline: auto;
+  font-size: clamp(2.9rem, 9.5vw, 6.75rem);
+  line-height: 0.98;
+  letter-spacing: -0.05em;
+  font-weight: 760;
+  text-wrap: balance;
+}
+
+.hero--v2 .hero__lead {
+  font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+
+.hero--v2 .marquee {
+  margin-top: 0;
+}
+
+/* Единственный «оркестрованный» момент: поочерёдное появление hero */
+.hero--v2 .hero__inner > * {
+  animation: rise 1s var(--ease-out) both;
+}
+.hero--v2 .hero__inner > :nth-child(1) { animation-delay: 0.05s; }
+.hero--v2 .hero__inner > :nth-child(2) { animation-delay: 0.15s; }
+.hero--v2 .hero__inner > :nth-child(3) { animation-delay: 0.28s; }
+.hero--v2 .hero__inner > :nth-child(4) { animation-delay: 0.4s; }
+.hero--v2 .hero__inner > :nth-child(5) { animation-delay: 0.55s; }
+
+/* Градиент в заголовке медленно переливается */
+.grad {
+  background-size: 220% 100%;
+  animation: sheen 8s ease-in-out infinite alternate;
+}
+
+@keyframes sheen {
+  to {
+    background-position: 100% 0;
+  }
+}
+
+/* Статистика: крупные цифры без рамок, только тонкие разделители */
+.stats {
+  max-width: 720px;
+  padding: 1.5rem 0 0;
+  gap: 0;
+  border: 0;
+  border-top: 1px solid var(--h-line);
+  border-radius: 0;
+  background: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.stat {
+  padding-inline: 1rem;
+}
+
+.stat + .stat {
+  border-left: 1px solid var(--h-line);
+}
+
+.stat__value {
+  font-size: clamp(1.8rem, 4.5vw, 2.75rem);
+  letter-spacing: -0.04em;
+}
+
+/* ---------- Секции ---------- */
+.section {
+  padding-block: clamp(5rem, 12vw, 9rem);
+}
+
+.section--tight {
+  padding-block: clamp(2.5rem, 5vw, 4rem) clamp(5rem, 9vw, 7rem);
+}
+
+.about-head {
+  max-width: 52rem;
+  margin-inline: auto;
+  text-align: center;
+}
+
+.about-head__title {
+  font-size: clamp(2.2rem, 6vw, 4.25rem);
+  line-height: 1.04;
+  letter-spacing: -0.045em;
+}
+
+.about-head__lead {
+  max-width: 44ch;
+  margin-inline: auto;
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
+}
+
+.eyebrow {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+/* Заголовки секций по центру, ссылка под ними */
+.section-head {
+  flex-direction: column;
+  align-items: center;
+  gap: 1.1rem;
+  text-align: center;
+}
+
+.section-head h2 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  letter-spacing: -0.045em;
+}
+
+.section-head__lead {
+  margin-inline: auto;
+  font-size: clamp(1.05rem, 1.8vw, 1.25rem);
+}
+
+/* ---------- Bento ---------- */
+.bento {
+  gap: 1rem;
+}
+
+.bento__card {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  min-height: 17rem;
+  padding: clamp(1.75rem, 3vw, 2.5rem);
+  border: 0;
+  border-radius: var(--radius-xl);
+  background: var(--ice);
+  overflow: hidden;
+  transition:
+    opacity 0.7s var(--ease-out),
+    transform 0.5s var(--ease-apple),
+    box-shadow 0.5s var(--ease-apple);
+}
+
+.bento__card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(60% 80% at 100% 0%, rgba(97, 183, 222, 0.22), transparent 70%);
+  pointer-events: none;
+}
+
+.bento__card:hover {
+  transform: scale(1.015);
+  border-color: transparent;
+  box-shadow: var(--shadow-lift);
+}
+
+.bento__card > * {
+  position: relative;
+}
+
+.bento__index {
+  position: absolute;
+  top: clamp(1.5rem, 3vw, 2.25rem);
+  left: clamp(1.75rem, 3vw, 2.5rem);
+  margin: 0;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+}
+
+.bento__title {
+  font-size: clamp(1.5rem, 2.6vw, 2.1rem);
+  letter-spacing: -0.03em;
+}
+
+.bento__text {
+  max-width: 34ch;
+  font-size: 1.05rem;
+  opacity: 1;
+  color: var(--muted-on-ice);
+}
+
+/* Широкая карточка — тёмная, как «главная» плитка */
+.bento__card--wide {
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-deep) 100%);
+}
+
+.bento__card--wide::before {
+  background:
+    radial-gradient(50% 70% at 90% 10%, rgba(97, 183, 222, 0.35), transparent 70%),
+    radial-gradient(40% 60% at 70% 100%, rgba(117, 84, 199, 0.3), transparent 70%);
+}
+
+.bento__card--wide .bento__title {
+  color: #fff;
+}
+
+.bento__card--wide .bento__text {
+  color: rgba(255, 255, 255, 0.78);
+}
+
+/* ---------- Directions: карточки вместо строк ---------- */
+.directions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 1rem;
+  border-top: 0;
+}
+
+.direction {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 1.75rem;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xl);
+  background: var(--white);
+  box-shadow: var(--shadow-soft);
+  transition:
+    transform 0.5s var(--ease-apple),
+    box-shadow 0.5s var(--ease-apple),
+    border-color 0.3s ease;
+}
+
+.direction:hover {
+  transform: translateY(-4px);
+  margin: 0;
+  padding: 1.75rem;
+  border-color: var(--sky);
+  border-radius: var(--radius-xl);
+  background: var(--white);
+  box-shadow: var(--shadow-lift);
+}
+
+.direction__title {
+  font-size: 1.6rem;
+  letter-spacing: -0.03em;
+}
+
+.direction__level {
+  justify-self: auto;
+  margin-top: auto;
+  padding-top: 0.75rem;
+}
+
+/* ---------- Events: мягкие карточки, без рельсы ---------- */
+.timeline {
+  gap: 0.9rem;
+}
+
+.timeline::before,
+.event::before {
+  display: none;
+}
+
+.event {
+  align-items: center;
+  padding: 1.5rem 1.75rem;
+  border-radius: var(--radius-xl);
+  background: var(--ice);
+  transition:
+    transform 0.5s var(--ease-apple),
+    box-shadow 0.5s var(--ease-apple);
+}
+
+.event:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-soft);
+}
+
+.event__body {
+  padding-left: 0;
+}
+
+.event__day {
+  font-size: 2.75rem;
+  letter-spacing: -0.05em;
+}
+
+/* ---------- Workshops ---------- */
+.workshop-list {
+  display: grid;
+  gap: 0.9rem;
+  border-top: 0;
+}
+
+.workshop {
+  margin: 0;
+  padding: 1.5rem 1.75rem;
+  border: 0;
+  border-radius: var(--radius-xl);
+  background: var(--ice);
+  transition:
+    transform 0.5s var(--ease-apple),
+    box-shadow 0.5s var(--ease-apple),
+    background-color 0.3s ease;
+}
+
+.workshop:hover {
+  transform: translateY(-3px);
+  border-color: transparent;
+  background: var(--white);
+  box-shadow: var(--shadow-lift);
+}
+
+.workshop__title {
+  font-size: 1.35rem;
+  letter-spacing: -0.025em;
+}
+
+/* Ice-секция: карточки белые, чтобы не сливались с фоном */
+.section--ice .event,
+.section--ice .workshop {
+  background: var(--white);
+  box-shadow: var(--shadow-soft);
+}
+
+/* ---------- Внутренние страницы ---------- */
+.page-head {
+  padding-block: clamp(4rem, 9vw, 7rem) clamp(2rem, 4vw, 3rem);
+  text-align: center;
+  border-bottom: 0;
+}
+
+.page-head h1 {
+  font-size: clamp(2.8rem, 8vw, 5.5rem);
+  letter-spacing: -0.05em;
+}
+
+.page-head p {
+  margin-inline: auto;
+  font-size: clamp(1.1rem, 2vw, 1.4rem);
+}
+
+.article-head {
+  border-bottom: 0;
+}
+
+.article-head h1 {
+  letter-spacing: -0.045em;
+}
+
+.filters {
+  max-width: 40rem;
+  margin-inline: auto;
+}
+
+.filters .chips {
+  justify-content: center;
+}
+
+.filters__status {
+  text-align: center;
+}
+
+.input {
+  border-radius: 14px;
+  padding: 0.85rem 1.1rem;
+}
+
+input[type='search'].input {
+  border-radius: 999px;
+  padding-inline: 1.4rem;
+  background: var(--ice);
+  border-color: transparent;
+}
+
+input[type='search'].input:focus-visible {
+  background: var(--white);
+}
+
+.chip {
+  transition: all 0.25s var(--ease-apple);
+}
+
+.panel {
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-soft);
+}
+
+.state--empty,
+.state--error {
+  align-items: center;
+  text-align: center;
+  border-radius: var(--radius-xl);
+}
+
+/* ---------- CTA ---------- */
+.cta {
+  border-radius: 36px;
+  padding: clamp(4rem, 10vw, 7.5rem) 1.5rem;
+}
+
+.cta__title {
+  font-size: clamp(2.2rem, 6vw, 4.25rem);
+  letter-spacing: -0.045em;
+  line-height: 1.02;
+}
+
+.cta__text {
+  font-size: clamp(1.05rem, 2vw, 1.3rem);
+}
+
+/* ---------- Footer ---------- */
+.site-footer a {
+  transition: color 0.2s ease;
+}
+
+/* ---------- Появление при прокрутке без JS (там, где поддерживается) ---------- */
+@supports (animation-timeline: view()) {
+  .event,
+  .workshop,
+  .direction,
+  .state--empty {
+    animation: rise linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 30%;
+  }
+
+  .cta {
+    animation: cta-in linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 55%;
+  }
+
+  @keyframes cta-in {
+    from {
+      transform: scale(0.94);
+      opacity: 0.4;
+    }
+  }
+}
+
+/* ---------- Адаптив ---------- */
+@media (max-width: 56rem) {
+  .bento__card {
+    min-height: 13rem;
+  }
+}
+
+@media (max-width: 40rem) {
+  .event {
+    padding: 1.25rem 1.25rem 1.25rem 1.25rem;
+  }
+
+  .event__date {
+    gap: 0.5rem;
+  }
+
+  .stat {
+    padding: 0.75rem 0;
+  }
+
+  .stat + .stat {
+    border-left: 0;
+    border-top: 1px solid var(--h-line);
+  }
+
+  .hero--v2 {
+    min-height: 0;
+  }
+}
+
+/* ---------- Reduced motion ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .main > *,
+  .hero--v2 .hero__inner > *,
+  .grad,
+  .event,
+  .workshop,
+  .direction,
+  .state--empty,
+  .cta {
+    animation: none !important;
+  }
+
+  .btn:hover,
+  .bento__card:hover,
+  .direction:hover,
+  .event:hover,
+  .workshop:hover {
+    transform: none !important;
+  }
+}
