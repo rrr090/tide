@@ -67,6 +67,7 @@ export function safeUrl(value: string | null | undefined): string | null {
   }
 }
 
+/** May return an empty string when the text has no letters or digits it can use. */
 export function slugify(text: string): string {
   return text
     .toLowerCase()

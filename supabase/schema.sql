@@ -112,6 +112,28 @@ create table if not exists public.workshops (
   updated_at   timestamptz not null default now()
 );
 
+create table if not exists public.teams (
+  id          uuid primary key default gen_random_uuid(),
+  title       text not null,
+  summary     text not null default '',
+  description text not null default '',
+  status      text not null default 'building'
+              check (status in ('building', 'shipped', 'recruiting')),
+  tags        text[] not null default '{}',
+  members     jsonb not null default '[]',   -- [{ "name": "...", "role": "..." }]
+  repo_url    text,
+  demo_url    text,
+  sort_order  int not null default 0,
+  published   boolean not null default true,
+  created_at  timestamptz not null default now(),
+  updated_at  timestamptz not null default now()
+);
+
+-- Databases created before teams joined this file have no updated_at column,
+-- and the set_updated_at trigger below needs it.
+alter table public.teams
+  add column if not exists updated_at timestamptz not null default now();
+
 create index if not exists directions_sort_idx on public.directions (sort_order);
 create index if not exists events_starts_idx   on public.events (starts_at);
 create index if not exists events_tags_idx     on public.events using gin (tags);
@@ -122,7 +144,7 @@ do $$
 declare
   t text;
 begin
-  foreach t in array array['directions', 'events', 'workshops'] loop
+  foreach t in array array['directions', 'events', 'workshops', 'teams'] loop
     execute format('drop trigger if exists set_updated_at on public.%I', t);
     execute format(
       'create trigger set_updated_at before update on public.%I

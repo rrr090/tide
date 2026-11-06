@@ -434,7 +434,14 @@ export function adminPage(): RouteResult {
         }
         payload[c.field.key] = empty ? null : value;
       }
-      if ('slug' in payload && !payload.slug) payload.slug = slugify(String(payload.title ?? ''));
+      if ('slug' in payload && !payload.slug) {
+        payload.slug = slugify(String(payload.title ?? ''));
+        if (!payload.slug) {
+          error.textContent = 'Could not create an address from this title. Enter one in the Address field.';
+          controls.find((c) => c.field.key === 'slug')?.focus();
+          return;
+        }
+      }
       // Text columns that are NOT NULL in the schema.
       if ('summary' in payload && payload.summary == null) payload.summary = '';
       if ('body_md' in payload && payload.body_md == null) payload.body_md = '';

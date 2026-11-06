@@ -45,6 +45,7 @@ export const currentPath = (): string => {
 export function startRouter(outlet: HTMLElement, onChange: (path: string) => void): void {
   let token = 0;
   let cleanup: void | (() => void);
+  let firstRender = true;
 
   const render = async (): Promise<void> => {
     const current = ++token;
@@ -75,7 +76,9 @@ export function startRouter(outlet: HTMLElement, onChange: (path: string) => voi
     outlet.replaceChildren(result.el);
     setTitle(result.title);
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    outlet.focus({ preventScroll: true });
+    // Not on first load: focus would land past the skip link and the header.
+    if (!firstRender) outlet.focus({ preventScroll: true });
+    firstRender = false;
     cleanup = result.mount?.();
   };
 

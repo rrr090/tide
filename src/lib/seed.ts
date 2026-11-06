@@ -18,7 +18,7 @@ export const seedDirections: Direction[] = [
     slug: 'ml-foundations',
     title: 'Machine learning foundations',
     summary:
-      'Linear models, TIDE descent and neural networks, implemented by hand before reaching for a framework.',
+      'Linear models, gradient descent and neural networks, implemented by hand before reaching for a framework.',
     level: 'Beginner friendly',
     sort_order: 1,
     published: true,
@@ -95,7 +95,7 @@ export const seedEvents: EventItem[] = [
 
 const bodyScratch = `## What we built
 
-A two-layer neural network in plain NumPy, trained on a small image dataset, with every TIDE derived and checked by hand.
+A two-layer neural network in plain NumPy, trained on a small image dataset, with every gradient derived and checked by hand.
 
 ## Why do it without a framework
 
