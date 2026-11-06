@@ -31,7 +31,7 @@ export const loading = (): HTMLElement =>
     'div',
     { class: 'state', role: 'status' },
     h('span', { class: 'spinner', 'aria-hidden': 'true' }),
-    h('span', null, ' Riding the current...'),
+    h('span', null, ' Loading…'),
   );
 
 export function emptyState(title: string, text: string, action?: HTMLElement): HTMLElement {
@@ -48,7 +48,7 @@ export function errorState(text: string, retry: () => void): HTMLElement {
   return h(
     'div',
     { class: 'state state--error', role: 'alert' },
-    h('p', { class: 'state__title' }, 'The tide hit a snag'),
+    h('p', { class: 'state__title' }, 'Something went wrong'),
     h('p', { class: 'state__text' }, text),
     h('button', { class: 'btn btn--ghost btn--small', type: 'button', onclick: retry }, 'Try again'),
   );
@@ -70,7 +70,7 @@ export function fill<T>(
       .catch((error) => {
         console.error(error);
         host.replaceChildren(
-          errorState('Check your connection and try swimming back.', run),
+          errorState('Check your connection and try again.', run),
         );
       });
   };
@@ -146,7 +146,7 @@ export function eventRow(e: EventItem, past = false): HTMLElement {
       ? h(
           'a',
           { class: 'btn btn--primary btn--small event__cta', ...linkProps(url) },
-          'Dive in / Register',
+          'Register',
         )
       : null,
   );

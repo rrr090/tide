@@ -1,4 +1,7 @@
-import './styles/main.css';import { h } from './lib/dom';
+import '@fontsource-variable/geist';
+import '@fontsource-variable/geist-mono';
+import './styles/main.css';
+import { h } from './lib/dom';
 import { route, setNotFound, startRouter } from './lib/router';
 import { buildFooter, buildHeader } from './components/chrome';
 import { homePage } from './pages/home';
@@ -9,8 +12,6 @@ import { teamsPage } from './pages/teams';
 import { adminPage } from './pages/admin';
 import { notFoundPage } from './pages/notfound';
 import { initPageTransitions } from './lib/transition';
-import './styles/polish.css'; // должен идти последним среди импортов
-initPageTransitions(document.querySelector<HTMLElement>('.main')!);
 
 route('/', homePage);
 route('/events', eventsPage);
@@ -24,5 +25,13 @@ const header = buildHeader();
 const main = h('main', { id: 'main', tabindex: '-1', class: 'main' });
 
 document.getElementById('root')!.replaceChildren(header.el, main, buildFooter());
+
+// The router owns the hash, so "#main" would be treated as an unknown route.
+document.querySelector('.skip-link')?.addEventListener('click', (event) => {
+  event.preventDefault();
+  main.focus();
+});
+
+initPageTransitions();
 
 startRouter(main, header.update);

@@ -81,11 +81,10 @@ function buildOverlay(): { root: HTMLElement; layers: Layer[] } {
 
 let installed = false;
 
-export function initPageTransitions(selectorArg?: string | null | Element): void {
+export function initPageTransitions(selector = '.main, main, #main'): void {
   if (installed) return;
   installed = true;
 
-  const selector = typeof selectorArg === 'string' ? selectorArg : '.main, main, #main';
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   let overlay: ReturnType<typeof buildOverlay> | null = null;

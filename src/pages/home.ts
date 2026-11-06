@@ -30,30 +30,20 @@ function marquee(): HTMLElement {
       { class: 'marquee__track', role: hidden ? 'presentation' : 'list', 'aria-hidden': hidden ? 'true' : 'false' },
       TOPICS.map((t) => h('li', { class: 'marquee__item' }, t)),
     );
-  return h('div', { class: 'marquee', 'aria-label': 'Topics we cover' }, track(false), track(true));
+  return h('div', { class: 'marquee', role: 'group', 'aria-label': 'Topics we cover' }, track(false), track(true));
 }
 
 function stat(value: string, label: string): HTMLElement {
   return h('div', { class: 'stat' }, h('strong', { class: 'stat__value' }, value), h('span', { class: 'stat__label' }, label));
 }
 
-function bentoCard(index: string, title: string, text: string, modifier = ''): HTMLElement {
+function bentoCard(index: string, title: string, text: string): HTMLElement {
   return h(
     'article',
-    { class: `bento__card reveal ${modifier}`.trim() },
-    h(
-      'div',
-      { class: 'bento__topline' },
-      h('span', { class: 'bento__index' }, index),
-      h('span', { class: 'bento__signal', 'aria-hidden': 'true' }, '↗'),
-    ),
-    h(
-      'div',
-      { class: 'bento__body' },
-      h('h3', { class: 'bento__title' }, title),
-      h('p', { class: 'bento__text' }, text),
-    ),
-    h('span', { class: 'bento__watermark', 'aria-hidden': 'true' }, index),
+    { class: 'bento__card reveal' },
+    h('span', { class: 'bento__index' }, index),
+    h('h3', { class: 'bento__title' }, title),
+    h('p', { class: 'bento__text' }, text),
   );
 }
 
@@ -67,9 +57,7 @@ export function homePage(): RouteResult {
   /* ---------- Hero ---------- */
   const hero = h(
     'section',
-    { class: 'hero hero--v2' },
-    h('div', { class: 'hero__glow hero__glow--a', 'aria-hidden': 'true' }),
-    h('div', { class: 'hero__glow hero__glow--b', 'aria-hidden': 'true' }),
+    { class: 'hero' },
     h(
       'div',
       { class: 'wrap hero__inner' },
@@ -89,21 +77,12 @@ export function homePage(): RouteResult {
       h(
         'div',
         { class: 'hero__actions' },
-        h('a', { class: 'btn btn--primary btn--glow', href: '#/events' }, 'See upcoming events'),
-        h('a', { class: 'btn btn--ghost', href: '#/workshops' }, 'Browse workshops →'),
+        h('a', { class: 'btn btn--primary', href: '#/events' }, 'See upcoming events'),
+        h('a', { class: 'btn btn--ghost', href: '#/workshops' }, 'Browse workshops'),
       ),
       h(
         'div',
-        { class: 'hero__principles' },
-        h('span', { class: 'hero__principle' }, h('i', null, '✦'), 'Hands-on'),
-        h('span', { class: 'hero__principle-separator', 'aria-hidden': 'true' }, '/'),
-        h('span', { class: 'hero__principle' }, h('i', null, '✦'), 'Open materials'),
-        h('span', { class: 'hero__principle-separator', 'aria-hidden': 'true' }, '/'),
-        h('span', { class: 'hero__principle' }, h('i', null, '✦'), 'Beginner friendly'),
-      ),
-      h(
-        'div',
-        { class: 'stats', role: 'list' },
+        { class: 'stats' },
         stat('Weekly', 'live-code sessions'),
         stat('100%', 'open materials'),
         stat('0', 'prior experience needed'),
@@ -123,7 +102,7 @@ export function homePage(): RouteResult {
       h(
         'div',
         { class: 'about-head reveal' },
-        h('span', { class: 'eyebrow' }, 'What we do'),
+        sectionIndex('01', 'What we do'),
         h('h2', { class: 'about-head__title' }, 'A current of knowledge for those who build.'),
         h(
           'p',
@@ -134,7 +113,6 @@ export function homePage(): RouteResult {
       h(
         'div',
         { class: 'about-note reveal' },
-        h('span', { class: 'about-note__mark', 'aria-hidden': 'true' }, '“'),
         h('p', null, 'Every session ends with something you can run on your own laptop.'),
         h('span', { class: 'about-note__label' }, 'OUR APPROACH'),
       ),
@@ -142,8 +120,8 @@ export function homePage(): RouteResult {
         'div',
         { class: 'bento' },
         bentoCard('01', 'Workshops', 'Hands-on sessions with live code, reusable slides and someone to unblock you.'),
-        bentoCard('02', 'Projects', 'Small teams, shared goals, real AI demos you can show off.','bento__card--wide'),
-        bentoCard('03', 'Open materials', 'Notes, PDFs and notebooks archived after every session.', 'bento__card--ultra'),
+        bentoCard('02', 'Projects', 'Small teams, shared goals, real AI demos you can show off.'),
+        bentoCard('03', 'Open materials', 'Notes, PDFs and notebooks archived after every session.'),
       ),
     ),
   );
@@ -177,7 +155,7 @@ export function homePage(): RouteResult {
     const upcoming = items.filter((e) => isUpcoming(e)).slice(0, 3);
     return upcoming.length
       ? h('ul', { class: 'timeline', role: 'list' }, upcoming.map((e) => eventRow(e)))
-      : emptyState('No events announced yet', 'New tides are posted here first.');
+      : emptyState('No events announced yet', 'New events are posted here first.');
   });
   const events = h(
     'section',
@@ -206,7 +184,7 @@ export function homePage(): RouteResult {
       { class: 'wrap reveal' },
       sectionIndex('04', 'Workshops'),
       sectionHead(
-        'Recent tides (Workshops)',
+        'Recent workshops',
         'Missed a session? Catch up with the archived notes and code.',
         { label: 'Browse the archive', href: '#/workshops' },
       ),
@@ -228,7 +206,7 @@ export function homePage(): RouteResult {
         h('span', { class: 'cta__eyebrow' }, h('i', { 'aria-hidden': 'true' }), 'NEXT SESSION'),
         h('h2', { class: 'cta__title' }, 'The next tide is coming in.'),
         h('p', { class: 'cta__text' }, 'Join a session, meet the team, and build your first model with us.'),
-        h('a', { class: 'btn btn--primary btn--glow', href: '#/events' }, 'Find your first workshop'),
+        h('a', { class: 'btn btn--primary', href: '#/events' }, 'Find your first workshop'),
       ),
     ),
   );
