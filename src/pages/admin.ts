@@ -113,7 +113,7 @@ const ENTITIES: Entity[] = [
       { key: 'summary', label: 'Short pitch', type: 'textarea', help: 'One sentence shown in bold under the name.' },
       { key: 'description', label: 'Description', type: 'textarea', help: 'What the team is building and where it is now.' },
       { key: 'status', label: 'Status', type: 'select', options: ['building', 'shipped', 'recruiting'], help: 'Recruiting shows a "Looking for members" badge.' },
-      { key: 'members', label: 'Members', type: 'members', help: 'One person per line: Name | Role. Example: Aiko Tanaka | Team lead. The first six orbit the whirlpool.' },
+      { key: 'members', label: 'Members', type: 'members', help: 'One person per line: Name | Role. Example: Aiko Tanaka | Team lead.' },
       { key: 'tags', label: 'Tags', type: 'tags', help: 'Separate with commas, for example: llm, python.' },
       { key: 'repo_url', label: 'Repository link', type: 'url' },
       { key: 'demo_url', label: 'Live demo link', type: 'url' },
@@ -291,7 +291,9 @@ export function adminPage(): RouteResult {
           signOutButton(),
         ),
       ),
-      notice ? h('p', { class: 'notice', role: 'status' }, notice) : null,
+      notice
+        ? h('p', { class: notice.startsWith('Could not') ? 'notice' : 'notice notice--success', role: 'status' }, notice)
+        : null,
       listHost,
     );
     void loadList(listHost);
