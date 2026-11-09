@@ -1,6 +1,7 @@
 import { h } from '../lib/dom';
 import { CLUB } from '../config';
 import { isDemo } from '../lib/supabase';
+import { currentMember, currentUser, onAuthChange } from '../lib/auth';
 
 const MARK =
   '<svg viewBox="0 0 32 32" width="30" height="30" fill="none" aria-hidden="true">' +
@@ -21,13 +22,25 @@ const NAV_ITEMS: { label: string; href: string; match: (p: string) => boolean }[
   { label: 'Events', href: '#/events', match: (p) => p.startsWith('/events') },
   { label: 'Workshops', href: '#/workshops', match: (p) => p.startsWith('/workshops') },
   { label: 'Teams', href: '#/teams', match: (p) => p.startsWith('/teams') },
+  { label: 'Community', href: '#/community', match: (p) => p.startsWith('/community') },
 ];
+
+const ACCOUNT_PATHS = ['/account', '/signin', '/signup'];
 
 export function buildHeader(): { el: HTMLElement; update: (path: string) => void } {
   const links = NAV_ITEMS.map((item) => ({
     item,
     a: h('a', { class: 'nav__link', href: item.href }, item.label),
   }));
+  const account = h('a', { class: 'nav__link nav__link--account' });
+  const showAccount = (): void => {
+    const signedIn = Boolean(currentUser());
+    account.href = signedIn ? '#/account' : '#/signin';
+    account.textContent = signedIn ? (currentMember()?.display_name ?? 'Account') : 'Sign in';
+  };
+  showAccount();
+  onAuthChange(showAccount);
+
   const el = h(
     'header',
     { class: 'site-header' },
@@ -39,6 +52,7 @@ export function buildHeader(): { el: HTMLElement; update: (path: string) => void
         'nav',
         { class: 'nav', 'aria-label': 'Main' },
         links.map((l) => l.a),
+        isDemo ? null : account,
       ),
     ),
   );
@@ -47,6 +61,8 @@ export function buildHeader(): { el: HTMLElement; update: (path: string) => void
       if (item.match(path)) a.setAttribute('aria-current', 'page');
       else a.removeAttribute('aria-current');
     }
+    if (ACCOUNT_PATHS.includes(path)) account.setAttribute('aria-current', 'page');
+    else account.removeAttribute('aria-current');
   };
   return { el, update };
 }
@@ -80,6 +96,7 @@ export function buildFooter(): HTMLElement {
         h('a', { href: '#/events' }, 'Events'),
         h('a', { href: '#/workshops' }, 'Workshops'),
         h('a', { href: '#/teams' }, 'Teams'),
+        h('a', { href: '#/community' }, 'Community'),
         ...social.map(([label, href]) =>
           h('a', { href, target: '_blank', rel: 'noopener noreferrer' }, label),
         ),

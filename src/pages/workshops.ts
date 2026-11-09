@@ -55,12 +55,17 @@ export function workshopsPage(): RouteResult {
       chips.replaceChildren(make('All', null), ...tags.map(([t]) => make(t, t)));
     };
 
+    // Only the first render staggers: filtering rebuilds the list on every keystroke.
+    let listClass = 'workshop-list';
+
     const apply = (): void => {
       const shown = all.filter(matches);
       status.textContent = `${shown.length} of ${all.length} workshops`;
+      const className = listClass;
+      listClass = 'workshop-list workshop-list--static';
       results.replaceChildren(
         shown.length
-          ? h('ul', { class: 'workshop-list', role: 'list' }, shown.map(workshopRow))
+          ? h('ul', { class: className, role: 'list' }, shown.map(workshopRow))
           : emptyState(
               'No workshops match',
               'Try a different word or clear the filters.',

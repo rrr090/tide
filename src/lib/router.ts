@@ -39,6 +39,8 @@ export function setTitle(title: string): void {
 
 export const currentPath = (): string => {
   const raw = window.location.hash.replace(/^#/, '') || '/';
+  // Email confirmation and reset links land with their tokens in the hash.
+  if (/^(access_token|error)=/.test(raw)) return '/';
   return raw.split('?')[0] || '/';
 };
 
@@ -72,14 +74,24 @@ export function startRouter(outlet: HTMLElement, onChange: (path: string) => voi
     }
     if (current !== token) return;
 
-    if (typeof cleanup === 'function') cleanup();
-    outlet.replaceChildren(result.el);
-    setTitle(result.title);
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    // Not on first load: focus would land past the skip link and the header.
-    if (!firstRender) outlet.focus({ preventScroll: true });
-    firstRender = false;
-    cleanup = result.mount?.();
+    const page = result;
+    const swap = (): void => {
+      if (typeof cleanup === 'function') cleanup();
+      outlet.replaceChildren(page.el);
+      setTitle(page.title);
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      // Not on first load: focus would land past the skip link and the header.
+      if (!firstRender) outlet.focus({ preventScroll: true });
+      firstRender = false;
+      cleanup = page.mount?.();
+    };
+
+    const crossfade =
+      !firstRender &&
+      'startViewTransition' in document &&
+      !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (crossfade) document.startViewTransition(swap);
+    else swap();
   };
 
   window.addEventListener('hashchange', () => void render());

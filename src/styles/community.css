@@ -1,0 +1,199 @@
+/* Accounts, forum and project pages, built on the main.css tokens. */
+
+.narrow {
+  max-width: var(--wrap-narrow);
+}
+
+.page-head .btn {
+  margin-top: 1rem;
+}
+
+.form__links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  font-size: var(--text-sm);
+}
+
+.notice[hidden] {
+  display: none;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.125rem 0.875rem;
+  color: var(--faint);
+  font-size: var(--text-sm);
+}
+
+.meta strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.text-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--faint);
+  font: inherit;
+  font-size: var(--text-sm);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+  cursor: pointer;
+}
+
+.text-button:hover {
+  color: var(--text);
+}
+
+/* User-written text is shown exactly as typed, never parsed as markup. */
+.post-text {
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.post-text--main {
+  margin-block: 1rem 0.75rem;
+  font-size: var(--text-lg);
+}
+
+/* ---------- Forum ---------- */
+.community__filters {
+  margin-bottom: 1.25rem;
+}
+
+.thread-list,
+.comment-list {
+  border-top: 1px solid var(--line);
+}
+
+.thread {
+  padding-block: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.thread__link {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.thread__link:hover {
+  color: var(--accent);
+}
+
+.comment {
+  display: grid;
+  gap: 0.25rem;
+  justify-items: start;
+  padding-block: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.reply {
+  margin-top: 1.5rem;
+}
+
+.reply.form,
+.team-join {
+  display: grid;
+  gap: 0.75rem;
+  justify-items: start;
+}
+
+.reply .field,
+.team-join .field {
+  width: 100%;
+}
+
+article > .wrap > .article-head {
+  padding-block: 1.5rem 0.5rem;
+}
+
+/* ---------- Project pages ---------- */
+.team__title-link {
+  color: var(--text);
+  text-decoration: none;
+}
+
+.team__title-link:hover {
+  color: var(--accent);
+}
+
+.team-status {
+  margin-top: 0.25rem;
+  color: var(--faint);
+}
+
+.team-status--recruiting {
+  color: var(--accent);
+}
+
+.team-status--shipped {
+  color: var(--success);
+}
+
+.team-people,
+.team-requests {
+  border-top: 1px solid var(--line);
+}
+
+.team-people li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 1rem;
+  padding-block: 0.625rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.team-people span {
+  flex: 1;
+  color: var(--faint);
+  font-size: var(--text-sm);
+}
+
+.team-requests li {
+  display: grid;
+  gap: 0.5rem;
+  padding-block: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+
+.team-join,
+.team-join__state {
+  margin-top: 1.5rem;
+}
+
+.team-manage {
+  margin-top: 2.5rem;
+}
+
+.site-header .nav__link--account {
+  overflow: hidden;
+  max-width: 11rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Five links plus the account link need two rows on a phone. */
+@media (max-width: 40rem) {
+  .site-header {
+    position: static;
+  }
+
+  .site-header__inner {
+    flex-wrap: wrap;
+    height: auto;
+    gap: 0;
+    padding-block: 0.5rem;
+  }
+
+  .nav {
+    flex-wrap: wrap;
+    width: 100%;
+    margin-inline: -0.625rem;
+  }
+}

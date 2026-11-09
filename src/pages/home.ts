@@ -12,144 +12,35 @@ import {
 } from '../components/ui';
 import '../styles/home.css';
 
-const TOPICS = [
-  'Neural networks',
-  'Transformers',
-  'Computer vision',
-  'Reinforcement learning',
-  'LLM demos',
-  'Data pipelines',
-  'Diffusion models',
-  'MLOps',
-];
-
-function marquee(): HTMLElement {
-  const track = (hidden: boolean) =>
-    h(
-      'ul',
-      { class: 'marquee__track', role: hidden ? 'presentation' : 'list', 'aria-hidden': hidden ? 'true' : 'false' },
-      TOPICS.map((t) => h('li', { class: 'marquee__item' }, t)),
-    );
-  return h('div', { class: 'marquee', role: 'group', 'aria-label': 'Topics we cover' }, track(false), track(true));
-}
-
-function stat(value: string, label: string): HTMLElement {
-  return h('div', { class: 'stat' }, h('strong', { class: 'stat__value' }, value), h('span', { class: 'stat__label' }, label));
-}
-
-function bentoCard(index: string, title: string, text: string): HTMLElement {
-  return h(
-    'article',
-    { class: 'bento__card reveal' },
-    h('span', { class: 'bento__index' }, index),
-    h('h3', { class: 'bento__title' }, title),
-    h('p', { class: 'bento__text' }, text),
-  );
-}
-
-function sectionIndex(num: string, label: string): HTMLElement {
-  return h('div', { class: 'section__index', 'aria-hidden': 'true' }, h('span', null, num), h('span', null, label));
+function section(...children: (HTMLElement | null)[]): HTMLElement {
+  return h('section', { class: 'section' }, h('div', { class: 'wrap' }, children));
 }
 
 export function homePage(): RouteResult {
   const readout = h('p', { class: 'hero__readout', 'aria-hidden': 'true' });
 
-  /* ---------- Hero ---------- */
   const hero = h(
     'section',
     { class: 'hero' },
     h(
       'div',
       { class: 'wrap hero__inner' },
-      h('span', { class: 'pill' }, h('i', { class: 'pill__dot', 'aria-hidden': 'true' }), 'TIDE AI Club · open to all students'),
-      h(
-        'h1',
-        { class: 'hero__title' },
-        'Learn AI by ',
-        h('span', { class: 'grad' }, 'riding the wave'),
-        ' together.',
-      ),
+      h('h1', { class: 'hero__title' }, 'Learn AI by building things with other students.'),
       h(
         'p',
         { class: 'hero__lead' },
-        'A student club for hands-on AI. Catch a workshop, take the materials home, and ship something real with a team.',
+        'TIDE is a student AI club. Come to a hands-on workshop, take the materials home, and build something real with a team. Open to all students, no experience needed.',
       ),
       h(
         'div',
         { class: 'hero__actions' },
-        h('a', { class: 'btn btn--primary', href: '#/events' }, 'See upcoming events'),
-        h('a', { class: 'btn btn--ghost', href: '#/workshops' }, 'Browse workshops'),
-      ),
-      h(
-        'div',
-        { class: 'stats' },
-        stat('Weekly', 'live-code sessions'),
-        stat('100%', 'open materials'),
-        stat('0', 'prior experience needed'),
+        h('a', { class: 'btn btn--primary', href: '#/signup' }, 'Join TIDE'),
+        h('a', { class: 'btn btn--ghost', href: '#/events' }, 'See upcoming events'),
       ),
     ),
-    marquee(),
     readout,
   );
 
-  /* ---------- About (bento) ---------- */
-  const about = h(
-    'section',
-    { class: 'section' },
-    h(
-      'div',
-      { class: 'wrap' },
-      h(
-        'div',
-        { class: 'about-head reveal' },
-        sectionIndex('01', 'What we do'),
-        h('h2', { class: 'about-head__title' }, 'A current of knowledge for those who build.'),
-        h(
-          'p',
-          { class: 'about-head__lead' },
-          'We dive into real AI problems, from a first neural network to a working language model demo. No prior depth required, just a laptop and curiosity.',
-        ),
-      ),
-      h(
-        'div',
-        { class: 'about-note reveal' },
-        h('p', null, 'Every session ends with something you can run on your own laptop.'),
-        h('span', { class: 'about-note__label' }, 'OUR APPROACH'),
-      ),
-      h(
-        'div',
-        { class: 'bento' },
-        bentoCard('01', 'Workshops', 'Hands-on sessions with live code, reusable slides and someone to unblock you.'),
-        bentoCard('02', 'Projects', 'Small teams, shared goals, real AI demos you can show off.'),
-        bentoCard('03', 'Open materials', 'Notes, PDFs and notebooks archived after every session.'),
-      ),
-    ),
-  );
-
-  /* ---------- Directions ---------- */
-  const directionsHost = h('div');
-  fill(directionsHost, listDirections, (items) =>
-    items.length
-      ? h('ul', { class: 'directions', role: 'list' }, items.map(directionRow))
-      : emptyState('No directions yet', 'Organizers can add them from the admin panel.'),
-  );
-
-  const directions = h(
-    'section',
-    { class: 'section section--ice' },
-    h(
-      'div',
-      { class: 'wrap reveal' },
-      sectionIndex('02', 'Directions'),
-      sectionHead(
-        'Pick your wave',
-        'Each direction runs its own specialized sessions and projects. Dive into the one that matches your current learning goal.',
-      ),
-      directionsHost,
-    ),
-  );
-
-  /* ---------- Events ---------- */
   const eventsHost = h('div');
   fill(eventsHost, listEvents, (items) => {
     const upcoming = items.filter((e) => isUpcoming(e)).slice(0, 3);
@@ -157,94 +48,69 @@ export function homePage(): RouteResult {
       ? h('ul', { class: 'timeline', role: 'list' }, upcoming.map((e) => eventRow(e)))
       : emptyState('No events announced yet', 'New events are posted here first.');
   });
-  const events = h(
-    'section',
-    { class: 'section' },
-    h(
-      'div',
-      { class: 'wrap reveal' },
-      sectionIndex('03', 'Events'),
-      sectionHead('Coming up', undefined, { label: 'All events', href: '#/events' }),
-      eventsHost,
-    ),
-  );
 
-  /* ---------- Workshops ---------- */
   const workshopsHost = h('div');
   fill(workshopsHost, listWorkshops, (items) =>
     items.length
       ? h('ul', { class: 'workshop-list', role: 'list' }, items.slice(0, 4).map(workshopRow))
       : emptyState('No workshops published yet', 'Materials appear here after each session.'),
   );
-  const workshops = h(
-    'section',
-    { class: 'section section--ice' },
+
+  const directionsHost = h('div');
+  fill(directionsHost, listDirections, (items) =>
+    items.length
+      ? h('ul', { class: 'directions', role: 'list' }, items.map(directionRow))
+      : emptyState('No directions yet', 'Organizers can add them from the admin panel.'),
+  );
+
+  const about = h(
+    'div',
+    { class: 'about__text' },
     h(
-      'div',
-      { class: 'wrap reveal' },
-      sectionIndex('04', 'Workshops'),
-      sectionHead(
-        'Recent workshops',
-        'Missed a session? Catch up with the archived notes and code.',
-        { label: 'Browse the archive', href: '#/workshops' },
-      ),
+      'p',
+      null,
+      'Workshops are hands-on, with live code and someone to help when you get stuck. Every session ends with something you can run on your own laptop.',
+    ),
+    h(
+      'p',
+      null,
+      'Afterwards, the notes, PDFs and notebooks go into the ',
+      h('a', { href: '#/workshops' }, 'workshop archive'),
+      ', so you can catch up if you missed one.',
+    ),
+    h(
+      'p',
+      null,
+      'If you want to build something bigger, join one of the ',
+      h('a', { href: '#/teams' }, 'project teams'),
+      ' or start your own, and ask questions in the ',
+      h('a', { href: '#/community' }, 'community'),
+      '.',
+    ),
+  );
+
+  const el = h(
+    'div',
+    { class: 'home' },
+    hero,
+    section(sectionHead('Upcoming events', undefined, { label: 'All events', href: '#/events' }), eventsHost),
+    section(
+      sectionHead('Recent workshops', 'Missed a session? Catch up with the notes and code.', {
+        label: 'All workshops',
+        href: '#/workshops',
+      }),
       workshopsHost,
     ),
+    section(sectionHead('What we work on'), directionsHost),
+    section(sectionHead('How the club works'), about),
   );
-
-  /* ---------- Closing CTA ---------- */
-  const cta = h(
-    'section',
-    { class: 'section' },
-    h(
-      'div',
-      { class: 'wrap' },
-      h(
-        'div',
-        { class: 'cta reveal' },
-        h('div', { class: 'cta__glow', 'aria-hidden': 'true' }),
-        h('span', { class: 'cta__eyebrow' }, h('i', { 'aria-hidden': 'true' }), 'NEXT SESSION'),
-        h('h2', { class: 'cta__title' }, 'The next tide is coming in.'),
-        h('p', { class: 'cta__text' }, 'Join a session, meet the team, and build your first model with us.'),
-        h('a', { class: 'btn btn--primary', href: '#/events' }, 'Find your first workshop'),
-      ),
-    ),
-  );
-
-  const el = h('div', { class: 'home' }, hero, about, directions, events, workshops, cta);
 
   return {
     title: '',
     el,
     mount: () => {
       const stopDescent: unknown = mountDescent(hero, readout);
-
-      // Reveal-on-scroll
-      const targets = Array.from(el.querySelectorAll<HTMLElement>('.reveal'));
-      const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      let io: IntersectionObserver | undefined;
-      if (reduce || !('IntersectionObserver' in window)) {
-        targets.forEach((t) => t.classList.add('is-in'));
-      } else {
-        io = new IntersectionObserver(
-          (entries) => {
-            for (const entry of entries) {
-              if (entry.isIntersecting) {
-                entry.target.classList.add('is-in');
-                io?.unobserve(entry.target);
-              }
-            }
-          },
-          { threshold: 0.12, rootMargin: '0px 0px -40px 0px' },
-        );
-        targets.forEach((t, i) => {
-          t.style.setProperty('--reveal-delay', `${(i % 3) * 70}ms`);
-          io!.observe(t);
-        });
-      }
-
       return () => {
-        io?.disconnect();
         if (typeof stopDescent === 'function') (stopDescent as () => void)();
       };
     },

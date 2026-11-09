@@ -18,6 +18,10 @@ export interface Team {
   sort_order: number;
 }
 
+interface TeamRow extends Team {
+  team_members?: { role: string; status: string; member: { display_name: string } | null }[];
+}
+
 const DEMO_TEAMS: Team[] = [
   {
     id: 'demo-riptide',
@@ -77,13 +81,19 @@ export async function listTeams(): Promise<Team[]> {
   if (!supabase) return DEMO_TEAMS;
   const { data, error } = await supabase
     .from('teams')
-    .select('*')
+    .select('*,team_members(role,status,member:member_profiles(display_name))')
     .eq('published', true)
     .order('sort_order', { ascending: true });
   if (error) throw error;
-  return ((data ?? []) as Team[]).map((t) => ({
+  return ((data ?? []) as unknown as TeamRow[]).map(({ team_members, ...t }) => ({
     ...t,
     tags: Array.isArray(t.tags) ? t.tags : [],
-    members: Array.isArray(t.members) ? t.members : [],
+    // Names typed in by organizers, then people who joined with an account.
+    members: [
+      ...(Array.isArray(t.members) ? t.members : []),
+      ...(team_members ?? [])
+        .filter((m) => m.status === 'active')
+        .map((m) => ({ name: m.member?.display_name ?? 'Member', role: m.role })),
+    ],
   }));
 }
