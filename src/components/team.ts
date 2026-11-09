@@ -1,3 +1,4 @@
+import { currentUser, isStaffMember } from '../lib/auth';
 import { h, safeUrl } from '../lib/dom';
 import { isDemo } from '../lib/supabase';
 import type { Team } from '../lib/teams';
@@ -17,6 +18,8 @@ export function teamCard(t: Team): HTMLElement {
   if (demo) links.push(['Live demo', demo]);
 
   const status = t.status || 'building';
+  const userId = currentUser()?.id;
+  const canEdit = !isDemo && (isStaffMember() || Boolean(userId && t.owner_id === userId));
 
   return h(
     'li',
@@ -33,11 +36,12 @@ export function teamCard(t: Team): HTMLElement {
       t.summary ? h('p', null, t.summary) : null,
       t.description ? h('p', { class: 'team__desc' }, t.description) : null,
       tagList(t.tags),
-      links.length
+      links.length || canEdit
         ? h(
             'div',
             { class: 'team__links' },
             links.map(([label, href]) => h('a', { href, target: '_blank', rel: 'noopener noreferrer' }, label)),
+            canEdit ? h('a', { class: 'team__edit', href: `#/teams/${t.id}/edit` }, 'Edit') : null,
           )
         : null,
     ),

@@ -1,4 +1,5 @@
 import { h } from '../lib/dom';
+import { authReady } from '../lib/auth';
 import type { RouteResult } from '../lib/router';
 import { listTeams } from '../lib/teams';
 import { teamCard } from '../components/team';
@@ -8,7 +9,10 @@ import '../styles/teams.css';
 export function teamsPage(): RouteResult {
   const host = h('div');
 
-  fill(host, listTeams, (items) =>
+  // Wait for sign-in so each row knows whether to offer Edit.
+  const load = () => authReady().then(listTeams);
+
+  fill(host, load, (items) =>
     items.length
       ? h('ul', { class: 'teams', role: 'list' }, items.map(teamCard))
       : emptyState('No teams yet', 'Organizers can add teams from the admin panel.'),

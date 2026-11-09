@@ -16,6 +16,7 @@ export interface Team {
   repo_url: string | null;
   demo_url: string | null;
   sort_order: number;
+  owner_id?: string | null;
 }
 
 interface TeamRow extends Team {

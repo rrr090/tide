@@ -144,13 +144,23 @@ export async function createTeam(ownerId: string, input: TeamInput): Promise<str
     .insert({ ...input, owner_id: ownerId })
     .select('id')
     .single();
+  if (error?.code === '23505') throw new FormError('You already have a project. Each member can start one.');
   if (error) throw error;
   return (data as { id: string }).id;
 }
 
-export async function updateTeam(id: string, input: TeamInput): Promise<void> {
-  const { error } = await db().from('teams').update(input).eq('id', id);
+/** The project this person started, if any. */
+export async function getOwnTeam(userId: string): Promise<{ id: string } | null> {
+  const { data, error } = await db().from('teams').select('id').eq('owner_id', userId).maybeSingle();
   if (error) throw error;
+  return data as { id: string } | null;
+}
+
+export async function updateTeam(id: string, input: TeamInput): Promise<void> {
+  // Row-level security reports a blocked update as zero rows, not as an error.
+  const { data, error } = await db().from('teams').update(input).eq('id', id).select('id');
+  if (error) throw error;
+  if (!data?.length) throw new FormError('Your changes were not saved. Only the project owner or an organizer can edit this.');
 }
 
 export async function deleteTeam(id: string): Promise<void> {

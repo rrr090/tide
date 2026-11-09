@@ -97,6 +97,11 @@ create trigger sync_thread_activity
 alter table public.teams
   add column if not exists owner_id uuid references public.member_profiles (id) on delete set null;
 
+-- Each person can start one project, and can still join any number of others.
+-- Club teams made in the admin panel have no owner, so they don't count.
+create unique index if not exists teams_one_per_owner
+  on public.teams (owner_id) where owner_id is not null;
+
 -- Members can now write these, so the database has to enforce them too.
 alter table public.teams drop constraint if exists teams_repo_url_http;
 alter table public.teams add constraint teams_repo_url_http

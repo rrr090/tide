@@ -5,6 +5,7 @@ import {
   authorName,
   createTeam,
   deleteTeam,
+  getOwnTeam,
   getTeam,
   removeMember,
   requestToJoin,
@@ -245,6 +246,26 @@ export async function newTeamPage(): Promise<RouteResult> {
   await authReady();
   const user = currentUser();
   if (!user) return signInRequired('Start a project', 'Sign in to start a project.');
+  // Only a courtesy: if this check fails, the database still enforces the limit.
+  const own = await getOwnTeam(user.id).catch(() => null);
+  if (own) {
+    return pageShell(
+      'Start a project',
+      null,
+      h(
+        'div',
+        { class: 'panel panel--narrow' },
+        h('h2', null, 'You already have a project'),
+        h('p', null, 'Each member can start one project. You can still join other teams.'),
+        h(
+          'div',
+          { class: 'form__actions' },
+          h('a', { class: 'btn btn--primary', href: `#/teams/${own.id}/edit` }, 'Edit your project'),
+          h('a', { class: 'btn btn--ghost', href: '#/teams' }, 'Browse teams'),
+        ),
+      ),
+    );
+  }
   const form = teamForm(null, (input) => createTeam(user.id, input));
   return pageShell('Start a project', 'Describe your idea, then others can ask to join.', h('div', { class: 'narrow' }, form));
 }
